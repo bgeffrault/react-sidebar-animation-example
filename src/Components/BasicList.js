@@ -13,11 +13,7 @@ export default function BasicList() {
   return (
     <Box sx={{ width: "100%" }}>
       <nav aria-label="main mailbox folders">
-        <List
-          style={{
-            backdropFilter: "blur(14px)",
-          }}
-        >
+        <List>
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>

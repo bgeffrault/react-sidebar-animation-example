@@ -1,21 +1,10 @@
 import Box from "@mui/material/Box";
-import Switch from "@mui/material/Switch";
-import {
-  Avatar,
-  FormControlLabel,
-  IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import FolderIcon from "@mui/icons-material/Folder";
-import DeleteIcon from "@mui/icons-material/Delete";
-import BasicList from "./BasicList";
-import { useState } from "react";
+import { useTheme } from "@mui/material";
+import { useCallback, useState } from "react";
 import { useSidebar, SidebarContainer } from "react-sidebar-animation";
+import { Header } from "./Header";
+import { MainContent } from "./MainContent";
+import { SidebarContent } from "./SidebarContent";
 
 const SIDEBAR_WIDTH = 320;
 
@@ -24,7 +13,7 @@ export const Dashboard = () => {
   const [leftFullWidth, setLeftFullWidth] = useState(false);
   const [rightFullWidth, setRightFullWidth] = useState(false);
   const {
-    toggleSidebar: handleRightToggleSidebar,
+    toggleSidebar: toggleRightSidebar,
     open: rightOpen,
     state: rightState,
   } = useSidebar({
@@ -34,7 +23,7 @@ export const Dashboard = () => {
   });
 
   const {
-    toggleSidebar: handleLeftToggleSidebar,
+    toggleSidebar: toggleLeftSidebar,
     state: leftState,
     open: leftOpen,
   } = useSidebar({
@@ -43,48 +32,22 @@ export const Dashboard = () => {
     leftSide: true,
     fullWidth: leftFullWidth,
   });
+  const [leftInTransition, setLeftInTransition] = useState(false);
+  const [rightInTransition, setRightInTransition] = useState(false);
 
-  // return (
-  //   <div
-  //     style={{
-  //       position: "relative",
-  //       display: "flex",
-  //       height: "100vh",
-  //       width: "100vw",
-  //     }}
-  //   >
-  //     <div
-  //       style={{
-  //         flexGrow: 1,
-  //         padding: "16px",
-  //       }}
-  //     >
-  //       <button onClick={handleRightToggleSidebar}>Toggle sidebar</button>
-  //     </div>
-  //     <SidebarContainer
-  //       {...rightState}
-  //       style={{
-  //         backgroundImage: `linear-gradient(
-  //             120deg,
-  //             hsl(240deg 100% 20%) 0%,
-  //             hsl(289deg 100% 21%) 11%,
-  //             hsl(315deg 100% 27%) 20%,
-  //             hsl(329deg 100% 36%) 29%,
-  //             hsl(337deg 100% 43%) 38%,
-  //             hsl(357deg 91% 59%) 46%,
-  //             hsl(17deg 100% 59%) 56%,
-  //             hsl(34deg 100% 53%) 68%,
-  //             hsl(45deg 100% 50%) 82%,
-  //             hsl(55deg 100% 50%) 100%
-  //         )`,
-  //         color: "white",
-  //         padding: "8px",
-  //       }}
-  //     >
-  //       <div>Sidebar</div>
-  //     </SidebarContainer>
-  //   </div>
-  // );
+  const handleRightToggleSidebar = useCallback(() => {
+    setRightInTransition(true);
+    toggleRightSidebar(() => {
+      setRightInTransition(false);
+    });
+  }, [toggleRightSidebar]);
+
+  const handleLeftToggleSidebar = useCallback(() => {
+    setLeftInTransition(true);
+    toggleLeftSidebar(() => {
+      setLeftInTransition(false);
+    });
+  }, [toggleLeftSidebar]);
 
   return (
     <Box
@@ -95,44 +58,12 @@ export const Dashboard = () => {
         flexDirection: "column",
       }}
     >
-      <Box
-        component="header"
-        sx={{
-          display: "flex",
-          width: "100%",
-          backgroundColor: "grey.50",
-          alignItems: "center",
-          padding: 1,
-          gap: 2,
-          borderBottom: "1px solid",
-          borderColor: "grey.300",
-          height: "55px",
-          overflow: "auto",
-        }}
-      >
-        <Typography>
-          <strong>Sidebar animations demo</strong>
-        </Typography>
-
-        <FormControlLabel
-          control={<Switch onChange={handleLeftToggleSidebar} />}
-          label={"Left"}
-        />
-        <FormControlLabel
-          control={<Switch onChange={() => setLeftFullWidth((v) => !v)} />}
-          label="Left fullWidth"
-        />
-        <FormControlLabel
-          control={
-            <Switch onChange={handleRightToggleSidebar} defaultChecked />
-          }
-          label="Right"
-        />
-        <FormControlLabel
-          control={<Switch onChange={() => setRightFullWidth((v) => !v)} />}
-          label="Right fullWidth"
-        />
-      </Box>
+      <Header
+        handleLeftToggleSidebar={handleLeftToggleSidebar}
+        setLeftFullWidth={setLeftFullWidth}
+        toggleRightSidebar={handleRightToggleSidebar}
+        setRightFullWidth={setRightFullWidth}
+      />
       <Box
         sx={{
           position: "relative",
@@ -144,108 +75,46 @@ export const Dashboard = () => {
         <SidebarContainer
           {...leftState}
           style={{
-            // backgroundColor: palette.primary.light,
-            backgroundImage: `linear-gradient(
-              220deg,
-              hsl(240deg 100% 20%) 0%,
-              hsl(289deg 100% 21%) 11%,
-              hsl(315deg 100% 27%) 20%,
-              hsl(329deg 100% 36%) 29%,
-              hsl(337deg 100% 43%) 38%,
-              hsl(357deg 91% 59%) 46%,
-              hsl(17deg 100% 59%) 56%,
-              hsl(34deg 100% 53%) 68%,
-              hsl(45deg 100% 50%) 82%,
-              hsl(55deg 100% 50%) 100%
-            )`,
+            backgroundColor: palette.primary.light,
             color: "white",
             padding: "8px",
-            boxShadow: "2px 0px 2px 1px rgba(0, 0, 0, 0.2)",
+            boxShadow: `2px 0px 2px 1px ${palette.primary.dark}`,
             marginRight: "2px",
           }}
+          zIndex={2}
         >
           <SidebarContent />
         </SidebarContainer>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            flexGrow: 1,
-            overflow: "auto",
-            boxSizing: "border-box",
-          }}
-          p={2}
-        >
-          <Typography component="div" style={{ width: 300 }}>
-            <p>Left sidebar is {leftOpen ? "open" : "closed"}.</p>
-            <p>Right sidebar is {rightOpen ? "open" : "closed"}.</p>
-          </Typography>
-          <Box sx={{ bgcolor: "grey.200", borderRadius: 2 }}>
-            <List>
-              {Array(10)
-                .fill()
-                .map((_, i) => (
-                  <ListItem
-                    key={i}
-                    secondaryAction={
-                      <IconButton edge="end" aria-label="delete">
-                        <DeleteIcon />
-                      </IconButton>
-                    }
-                    component="nav"
-                  >
-                    <ListItemAvatar>
-                      <Avatar>
-                        <FolderIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary="Single-line item"
-                      secondary={"Secondary text"}
-                    />
-                  </ListItem>
-                ))}
-            </List>
-          </Box>
-        </Box>
+        <MainContent
+          leftOpen={leftOpen}
+          rightOpen={rightOpen}
+          leftInTransition={leftInTransition}
+          rightInTransition={rightInTransition}
+        />
         <SidebarContainer
           {...rightState}
           style={{
             backgroundImage: `linear-gradient(
-              120deg,
-              hsl(240deg 100% 20%) 0%,
-              hsl(289deg 100% 21%) 11%,
-              hsl(315deg 100% 27%) 20%,
-              hsl(329deg 100% 36%) 29%,
-              hsl(337deg 100% 43%) 38%,
-              hsl(357deg 91% 59%) 46%,
-              hsl(17deg 100% 59%) 56%,
-              hsl(34deg 100% 53%) 68%,
-              hsl(45deg 100% 50%) 82%,
-              hsl(55deg 100% 50%) 100%
-          )`,
-            // backgroundColor: palette.primary.light,
+              140deg,
+              hsl(210deg 79% 46%) 0%,
+              hsl(215deg 65% 50%) 21%,
+              hsl(222deg 62% 54%) 30%,
+              hsl(230deg 58% 57%) 39%,
+              hsl(240deg 53% 59%) 46%,
+              hsl(251deg 52% 57%) 54%,
+              hsl(262deg 51% 54%) 61%,
+              hsl(272deg 49% 51%) 69%,
+              hsl(282deg 54% 47%) 79%,
+              hsl(291deg 64% 42%) 100%
+            )`,
             color: "white",
             padding: "8px",
-            borderColor: palette.primary.dark,
-            borderLeft: "10px solid red",
+            borderLeft: `2px solid ${palette.primary.dark}`,
           }}
         >
-          <SidebarContent />
+          <SidebarContent blurMode />
         </SidebarContainer>
       </Box>
     </Box>
-  );
-};
-
-const SidebarContent = () => {
-  return (
-    <div p={2}>
-      Sidebar
-      <Typography>
-        <strong>A cool title</strong>
-      </Typography>
-      <BasicList />
-    </div>
   );
 };
