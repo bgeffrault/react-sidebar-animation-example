@@ -36,7 +36,14 @@ export const MainContent = ({
       p={2}
     >
       <Typography variant="h4" gutterBottom>
-        React Sidebar Animation demo
+        React Sidebar Animation demo:{" "}
+        <a
+          href="https://github.com/bgeffrault/react-sidebar-animation-example"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          source code
+        </a>
       </Typography>
       <Typography component="div" style={{ width: 300 }}>
         <p>Left sidebar is {getStateLabel(leftOpen, leftInTransition)}.</p>
